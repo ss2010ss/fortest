@@ -17,7 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from helloapp.views import index_page
+from helloapp.views import create_text
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('create_text/', create_text, name='create_text'),
     path('', index_page)
 ]

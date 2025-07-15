@@ -14,4 +14,7 @@ class textsfortest(models.Model):
 
     weight = models.IntegerField(default=0)
 
+    #def __str__ (self):
+        #return self.text
+
   

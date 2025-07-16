@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class textsfortest(models.Model):
-    text = models.CharField(max_length=1000, default='')
+    text = models.CharField(max_length=1000, default='', primary_key=True)
 
     parenttext = models.CharField(max_length=200, default='')
 

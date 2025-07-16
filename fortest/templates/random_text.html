@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Случайная цитата</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        .text-box { margin: 20px; padding: 20px; border: 1px solid #ccc; }
+        .button { padding: 10px 20px; margin: 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .button:hover { background-color: #0056b3; }
+        .counter { margin: 10px; }
+    </style>
+    <script>
+        function updateReaction(textId, action) {
+            // Формируем данные в формате application/x-www-form-urlencoded
+            const formData = new URLSearchParams();
+            formData.append(action, '1'); // Отправляем 'like=1' или 'dislike=1'
+
+            fetch(`/update_likes/${textId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка сети: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('likes').textContent = data.likes;
+                document.getElementById('dislikes').textContent = data.dislikes;
+            })
+            .catch(error => console.error('Ошибка:', error));
+        }
+    </script>
+</head>
+<body>
+    <h1>Случайная цитата</h1>
+    {% if text %}
+        <div class="text-box">
+            <p><strong>Цитата:</strong> {{ text.text }}</p>
+            <p><strong>Родительский текст:</strong> {{ text.parenttext }}</p>
+            <p class="counter"><strong>Количество посещений:</strong> {{ text.count }}</p>
+            <p>
+                <strong>Лайки:</strong> <span id="likes">{{ text.like }}</span>
+                <button onclick="updateReaction({{ text.id }}, 'like')">Лайк</button>
+            </p>
+            <p>
+                <strong>Дизлайки:</strong> <span id="dislikes">{{ text.dislike }}</span>
+                <button onclick="updateReaction({{ text.id }}, 'dislike')">Дизлайк</button>
+            </p>
+        </div>
+    {% else %}
+        <p>Цитаты отсутствуют.</p>
+    {% endif %}
+
+    <a href="{% url 'create_text' %}" class="button">Добавить цитату</a>
+    <a href="{% url 'look_texts' %}" class="button">Просмотр цитат</a>
+</body>
+</html>

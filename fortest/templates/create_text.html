@@ -8,6 +8,7 @@
     <style>
         .form-group { margin-bottom: 15px; }
         .error { color: red; }
+        .button { padding: 10px 20px; margin: 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -42,5 +43,9 @@
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
     </div>
+    <br>
+    
+    <a href="{% url 'look_texts' %}" class="button">Просмотр цитат</a>
+    <a href="{% url 'random_text' %}" class="button">Случайная цитата</a>
 </body>
 </html>

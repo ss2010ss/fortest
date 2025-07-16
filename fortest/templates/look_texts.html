@@ -1,0 +1,110 @@
+<!-- templates/look_texts.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр цитат</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        .text-box { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .button { padding: 10px 20px; margin: 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .button:hover { background-color: #0056b3; }
+        .search-box { margin-bottom: 20px; }
+        input { padding: 5px; width: 300px; }
+        mark { background-color: yellow; }
+        .pagination { margin-top: 20px; }
+    </style>
+    <script>
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function highlightMatch(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function performSearch() {
+            const query = document.getElementById('search-input').value;
+            if (query.length >= 3) {
+                fetch(`/search_texts/?q=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('search-results');
+                    resultsDiv.innerHTML = '';
+                    if (data.results.length > 0) {
+                        data.results.forEach(result => {
+                            const div = document.createElement('div');
+                            div.className = 'text-box';
+                            div.innerHTML = `
+                                <p><strong>Цитата:</strong> ${highlightMatch(result.text, data.query)}</p>
+                                <p><strong>Источник текста:</strong> ${highlightMatch(result.parenttext, data.query)}</p>
+                                <p><strong>Посещения:</strong> ${result.count}</p>
+                                <p><strong>Лайки:</strong> ${result.like}</p>
+                                <p><strong>Дизлайки:</strong> ${result.dislike}</p>
+                            `;
+                            resultsDiv.appendChild(div);
+                        });
+                    } else {
+                        resultsDiv.innerHTML = '<p>Ничего не найдено.</p>';
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
+            } else {
+                document.getElementById('search-results').innerHTML = '';
+            }
+        }
+
+        // Запускаем поиск при вводе текста (после 3 символов)
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', performSearch);
+        });
+    </script>
+</head>
+<body>
+    <h1>Просмотр цитат</h1>
+
+    <!-- Поле поиска -->
+    <div class="search-box">
+        <input type="text" id="search-input" placeholder="Поиск по цитате или родительскому тексту..." />
+        <div id="search-results"></div>
+    </div>
+
+    <!-- Список текстов с пагинацией -->
+    <div id="text-list">
+        {% if texts %}
+            {% for text in texts %}
+                <div class="text-box">
+                    <p><strong>Цитата:</strong> {{ text.text }}</p>
+                    <p><strong>Родительский текст:</strong> {{ text.parenttext }}</p>
+                    <p><strong>Посещения:</strong> {{ text.count }}</p>
+                    <p><strong>Лайки:</strong> {{ text.like }}</p>
+                    <p><strong>Дизлайки:</strong> {{ text.dislike }}</p>
+                </div>
+            {% endfor %}
+            <div class="pagination">
+                {% if has_previous %}
+                    <a href="?page={{ page|add:-1 }}" class="button">Назад</a>
+                {% endif %}
+                {% if has_next %}
+                    <a href="?page={{ page|add:1 }}" class="button">Вперёд</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>Цитаты отсутствуют.</p>
+        {% endif %}
+    </div>
+
+    <!-- Ссылки на другие страницы -->
+    <a href="{% url 'create_text' %}" class="button">Добавить цитату</a>
+    <a href="{% url 'random_text' %}" class="button">Случайная цитата</a>
+</body>
+</html>

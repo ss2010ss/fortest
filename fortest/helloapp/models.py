@@ -12,7 +12,7 @@ class textsfortest(models.Model):
 
     dislike = models.IntegerField(default=0)
 
-    weight = models.IntegerField(default=0)
+    weight = models.IntegerField(default=1)
 
     #def __str__ (self):
         #return self.text

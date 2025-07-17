@@ -23,9 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+16uy702!ip_p@_)rh5^@7nkuc4bxb8i#7xo0u&k6h=6c5j(=@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ss2010ss.pythonanywhere.com', 'localhost', '127.0.0.1']
+#ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -115,6 +116,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = '/home/ss2010ss/fortest/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

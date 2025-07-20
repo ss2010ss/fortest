@@ -40,6 +40,11 @@ def create_text(request):
             if parenttext_count >= 3:
                 messages.error(request, f'Нельзя добавить больше трёх записей с parenttext "{parenttext}".')
                 return render(request, 'create_text.html', {'form': form})
+            text = form.cleaned_data['text']
+            text_in_base = textsfortest.objects.filter(text=text).count()
+            if text_in_base > 0:
+                messages.error(request, f'Текст "{text}" уже существует в базе данных.')
+                return render(request, 'create_text.html', {'form': form})
             try:
                 form.save()  # Сохраняем данные в базу
                 messages.success(request, 'Цитата успешно добавлена!')
